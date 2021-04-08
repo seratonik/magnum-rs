@@ -45,7 +45,7 @@ where
         if let caf::FormatType::Other(code) = packet.audio_desc.format_id {
             // Opus inside Caf uses a custom "other" code/id
             if code == 1869641075 {
-                println!("{:?}", packet.audio_desc);
+                //println!("{:?}", packet.audio_desc);
                 let decoder = Decoder::new(
                     audiopus::SampleRate::Hz48000,
                     if packet.audio_desc.channels_per_frame == 1 {
