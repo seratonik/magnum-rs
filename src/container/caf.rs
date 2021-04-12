@@ -5,7 +5,7 @@ use std::{fmt::Debug, io::Read};
 
 use crate::{error::OpusSourceError, metadata::OpusMeta};
 
-struct OpusSourceCaf<T>
+pub struct OpusSourceCaf<T>
 where
     T: Read + Seek,
 {
