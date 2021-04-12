@@ -20,7 +20,7 @@ impl<T> Debug for OpusSourceCaf<T>
 where
     T: Read + Seek,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         todo!()
     }
 }
