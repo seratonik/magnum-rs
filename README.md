@@ -41,6 +41,7 @@ In your application code:
 ```rust
 // Dependencies
 use rodio::{OutputStream, Sink};
+use magnum::container::ogg::OpusSourceOgg;
 
 // ...
 
@@ -51,7 +52,7 @@ let (_stream, stream_handle) = OutputStream::try_default().unwrap();
 let file = BufReader::new(File::open("example.opus").unwrap());
 
 // Pass the reader into Magnum's OpusSourceOgg to get a Source compatible with Rodio
-let source = magnum::container::ogg::OpusSourceOgg::new(file).unwrap();
+let source = OpusSourceOgg::new(file).unwrap();
 
 // Create a Sink in Rodio to receive the Source
 let sink = Sink::try_new(&stream_handle).unwrap();
@@ -63,9 +64,46 @@ sink.append(source);
 sink.sleep_until_end();
 ```
 
+### Using Magnum with [Kira](https://github.com/tesselode/kira)
+
+Add to your `Cargo.toml`'s dependencies section:
+
+```toml
+[dependencies]
+magnum = { version = "*", features = ["with_kira"] }
+```
+
+In your application code:
+
+```rust
+// Dependencies
+use kira::{
+    manager::{AudioManager, AudioManagerSettings},
+    mixer::TrackIndex,
+};
+use magnum::container::ogg::OpusSourceOgg;
+
+// ...
+
+// Set up a Kira AudioManager as per normal
+let mut audio_manager = AudioManager::new(AudioManagerSettings::default()).unwrap();
+
+// Use a BufReader to open an opus file in Ogg format (in this example)
+let file = BufReader::new(File::open("example.opus").unwrap());
+
+// Pass the reader into Magnum's OpusSourceOgg to get an AudioStream compatible with Kira
+let source = OpusSourceOgg::new(file).unwrap();
+
+// Add the stream to the main track of the audio manager to start playing it
+audio_manager.add_stream(source, TrackIndex::Main).unwrap();
+
+// Keep the thread alive for the duration of the song since it plays in a background thread
+thread::sleep(Duration::from_secs(200));
+```
+
 ## TODOs
 
 - [ ] Tests
 - [ ] Better Error Handling
-- [ ] Examples
+- [ ] Runnable Examples
 - [ ] More Container Formats (.mkv, etc)
