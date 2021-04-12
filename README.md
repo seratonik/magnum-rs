@@ -27,7 +27,7 @@ those libraries that exactly matches with the one used in this library.
 
 ## Example Usage
 
-### Using Magnum with [Rodio](https://github.com/RustAudio/rodio):
+### Using Magnum with [Rodio](https://github.com/RustAudio/rodio)
 
 Add to your `Cargo.toml`'s dependencies section:
 
