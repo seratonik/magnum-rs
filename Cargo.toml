@@ -17,7 +17,8 @@ with_caf = ["caf"]
 with_ogg = ["ogg"]
 with_rodio = ["rodio"]
 with_kira = ["kira"]
-default = ["with_caf", "with_ogg", "with_rodio", "with_kira"]
+default = ["with_caf", "with_ogg"]
+all = ["with_caf", "with_ogg", "with_rodio", "with_kira"]
 
 [dependencies]
 kira = { version = "0.5.1", optional = true }
