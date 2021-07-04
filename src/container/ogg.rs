@@ -9,7 +9,7 @@ pub struct OpusSourceOgg<T>
 where
     T: Read + Seek,
 {
-    metadata: OpusMeta,
+    pub metadata: OpusMeta,
     packet: ogg::PacketReader<T>,
     decoder: Decoder,
     buffer: Vec<f32>,

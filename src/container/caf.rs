@@ -9,7 +9,7 @@ pub struct OpusSourceCaf<T>
 where
     T: Read + Seek,
 {
-    metadata: OpusMeta,
+    pub metadata: OpusMeta,
     packet: CafPacketReader<T>,
     decoder: Decoder,
     buffer: Vec<f32>,
