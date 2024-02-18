@@ -40,6 +40,12 @@ where
             channel_count: packet.audio_desc.channels_per_frame as u8,
             preskip: 0,
             output_gain: 0,
+            num_frames: match packet.get_packet_count() {
+                Some(num_packets) => {
+                    Some(num_packets * packet.audio_desc.frames_per_packet as usize)
+                }
+                None => None,
+            },
         };
 
         if let caf::FormatType::Other(code) = packet.audio_desc.format_id {
@@ -152,34 +158,49 @@ where
 }
 
 #[cfg(feature = "with_kira")]
-use kira::audio_stream::AudioStream;
-
-#[cfg(feature = "with_kira")]
-impl<T> AudioStream for OpusSourceCaf<T>
+impl<T> kira::sound::streaming::Decoder for OpusSourceCaf<T>
 where
     T: 'static + Read + Seek + Send + Debug,
 {
-    fn next(&mut self, dt: f64) -> kira::Frame {
-        match self.metadata.channel_count {
-            1 => {
-                let l = Iterator::next(self);
-                let sl = if let Some(n) = l { n } else { 0.0 };
-                kira::Frame {
-                    left: sl,
-                    right: sl,
+    type Error = OpusSourceError;
+
+    fn sample_rate(&self) -> u32 {
+        48_000 as u32
+    }
+
+    fn num_frames(&self) -> usize {
+        self.metadata.num_frames.unwrap_or(0) / self.packet.audio_desc.channels_per_frame as usize
+    }
+
+    fn decode(&mut self) -> Result<Vec<kira::dsp::Frame>, Self::Error> {
+        let chunk = self.get_next_chunk();
+        if let Some(chunk) = chunk {
+            let mut frames = vec![];
+
+            match self.metadata.channel_count {
+                1 => {
+                    for s in chunk {
+                        frames.push(kira::dsp::Frame { left: s, right: s });
+                    }
                 }
-            }
-            2 => {
-                let l = Iterator::next(self);
-                let r = Iterator::next(self);
-                let sl = if let Some(n) = l { n } else { 0.0 };
-                let sr = if let Some(n) = r { n } else { 0.0 };
-                kira::Frame {
-                    left: sl,
-                    right: sr,
+                2 => {
+                    for s in chunk.chunks(2) {
+                        frames.push(kira::dsp::Frame {
+                            left: s[0],
+                            right: s[1],
+                        });
+                    }
                 }
+                _ => return Err(OpusSourceError::InvalidAudioStream),
             }
-            _ => unimplemented!("Only mono and stereo are supported"),
+
+            Ok(frames)
+        } else {
+            Err(OpusSourceError::EndOfDataStream)
         }
+    }
+
+    fn seek(&mut self, _index: usize) -> Result<usize, Self::Error> {
+        Err(OpusSourceError::SeekingNotSupported)
     }
 }

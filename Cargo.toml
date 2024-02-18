@@ -22,11 +22,11 @@ default = ["with_caf", "with_ogg"]
 all = ["with_caf", "with_ogg", "with_rodio", "with_kira"]
 
 [dependencies]
-kira = { version = "0.5.3", optional = true }
+kira = { version = "0.8.7", optional = true }
 caf = { version = "0.1.0", optional = true }
-ogg = { version = "0.8.0", optional = true }
-rodio = { version = "0.14.0", optional = true }
+ogg = { version = "0.9.1", optional = true }
+rodio = { version = "0.17.3", optional = true }
 audiopus = "0.2.0"
-thiserror = "1.0.24"
-byteorder = "1.4.3"
-bitreader = "0.3.3"
+thiserror = "1.0.57"
+byteorder = "1.5.0"
+bitreader = "0.3.8"

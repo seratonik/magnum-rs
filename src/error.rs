@@ -11,6 +11,10 @@ pub enum OpusSourceError {
     #[cfg(feature = "with_ogg")]
     #[error("{0}")]
     OggHeaderError(#[from] ogg::OggReadError),
+    #[error("Seeking not supported")]
+    SeekingNotSupported,
+    #[error("End of data stream")]
+    EndOfDataStream,
 }
 
 // OggReadError

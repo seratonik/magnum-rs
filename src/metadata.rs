@@ -6,6 +6,7 @@ pub struct OpusMeta {
     pub channel_count: u8,
     pub preskip: u16,
     pub output_gain: i16,
+    pub num_frames: Option<usize>,
 }
 
 impl OpusMeta {
@@ -59,6 +60,7 @@ impl OpusMeta {
             channel_count: *channels,
             preskip,
             output_gain,
+            num_frames: None,
         })
     }
 }
