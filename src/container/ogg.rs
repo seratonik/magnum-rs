@@ -55,6 +55,19 @@ where
         })
     }
 
+    /// Read the next Ogg packet.
+    /// Return Some(packet), or None if at end of stream.
+    fn get_next_packet(&mut self) -> Option<ogg::Packet> {
+        while let Ok(packet) = self.packet.read_packet_expected() {
+            // Ignore invalid but harmless 0-byte packets that some 
+            // encoders sometimes generate at the end of a stream.
+            if packet.data.len() > 0 {
+                return Some(packet);
+            }
+        }
+        None
+    }
+
     /* FRAME SIZE Reference
     +-----------------------+-----------+-----------+-------------------+
     | Configuration         | Mode      | Bandwidth | Frame Sizes       |
@@ -81,7 +94,7 @@ where
      */
 
     fn get_next_chunk(&mut self) -> Option<Vec<f32>> {
-        if let Ok(packet) = self.packet.read_packet_expected() {
+        if let Some(packet) = self.get_next_packet() {
             let mut toc = BitReader::new(&packet.data[0..1]);
             let c = toc.read_u8(5).unwrap();
             let s = toc.read_u8(1).unwrap();
